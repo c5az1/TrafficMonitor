@@ -1,4 +1,4 @@
-﻿
+
 // TrafficMonitorDlg.cpp : 实现文件
 //
 
@@ -85,6 +85,7 @@ BEGIN_MESSAGE_MAP(CTrafficMonitorDlg, CDialog)
     ON_WM_RBUTTONUP()
     ON_WM_LBUTTONDOWN()
     ON_COMMAND(ID_NETWORK_INFO, &CTrafficMonitorDlg::OnNetworkInfo)
+    ON_COMMAND(ID_PIN_TOOLTIP, &CTrafficMonitorDlg::OnPinTooltip)
     ON_COMMAND(ID_ALWAYS_ON_TOP, &CTrafficMonitorDlg::OnAlwaysOnTop)
     ON_WM_INITMENUPOPUP()
     ON_COMMAND(ID_TRANSPARENCY_100, &CTrafficMonitorDlg::OnTransparency100)
@@ -2051,6 +2052,14 @@ void CTrafficMonitorDlg::OnRButtonUp(UINT nFlags, CPoint point)
     }
     //设置点击鼠标右键弹出菜单
     CMenu* pContextMenu = (is_plugin_item_clicked ? theApp.m_main_menu_plugin.GetSubMenu(0) : theApp.m_main_menu.GetSubMenu(0));
+    //根据固定提示窗口当前是否可见，动态修改菜单项文本（“固定提示信息” / “取消固定提示信息”）
+    {
+        CString pin_menu_text{ m_pin_tip_wnd.IsPinVisible()
+            ? theApp.m_str_table.LoadMenuText(L"TXT_UNPIN_TOOLTIP").c_str()
+            : theApp.m_str_table.LoadMenuText(L"TXT_PIN_TOOLTIP").c_str() };
+        if (!pin_menu_text.IsEmpty())
+            pContextMenu->ModifyMenu(ID_PIN_TOOLTIP, MF_BYCOMMAND | MF_STRING, ID_PIN_TOOLTIP, pin_menu_text);
+    }
     CPoint point1;  //定义一个用于确定光标位置的位置
     GetCursorPos(&point1);  //获取当前光标的位置，以便使得菜单可以跟随光标
     //设置默认菜单项
@@ -2135,6 +2144,33 @@ void CTrafficMonitorDlg::OnNetworkInfo()
     //SetAlwaysOnTop(); //由于在“连接详情”对话框内设置了取消窗口置顶，所有在对话框关闭后，重新设置窗口置顶
     if (m_tBarDlg != nullptr)
         m_tBarDlg->m_tool_tips.SetWindowPos(&wndTopMost, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);  //重新设置任务栏窗口的提示信息置顶
+}
+
+
+//“固定提示信息”菜单命令处理函数
+//将当前鼠标提示信息（与原有的悬停提示m_tool_tips使用的是同一份文本获取逻辑GetMouseTipsInfo()）
+//显示到一个独立的、不会自动消失的小窗口中。
+//该功能不会修改原有的鼠标悬停提示m_tool_tips的任何行为。
+void CTrafficMonitorDlg::OnPinTooltip()
+{
+    //如果固定提示窗口当前已经显示，则视为“取消固定”，直接隐藏
+    if (m_pin_tip_wnd.IsPinVisible())
+    {
+        m_pin_tip_wnd.HidePin();
+        return;
+    }
+
+    CString tip_info{ GetMouseTipsInfo() };
+
+    if (m_pin_tip_wnd.GetSafeHwnd() == NULL)
+    {
+        CPoint pt;
+        ::GetCursorPos(&pt);
+        m_pin_tip_wnd.Create(this, pt);
+    }
+
+    m_pin_tip_wnd.SetTipText(tip_info);
+    m_pin_tip_wnd.ShowPin();
 }
 
 
@@ -2895,6 +2931,11 @@ afx_msg LRESULT CTrafficMonitorDlg::OnMonitorInfoUpdated(WPARAM wParam, LPARAM l
         CString tip_info;
         tip_info = GetMouseTipsInfo();
         m_tool_tips.UpdateTipText(tip_info, this);
+    }
+    //更新固定提示窗口（如果当前处于显示状态）中的信息，保持实时刷新
+    if (m_pin_tip_wnd.IsPinVisible())
+    {
+        m_pin_tip_wnd.SetTipText(GetMouseTipsInfo());
     }
     //更新任务栏窗口鼠标提示
     if (IsTaskbarWndValid())

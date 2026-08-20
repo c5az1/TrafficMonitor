@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug (lite)|ARM64EC">
@@ -854,6 +854,7 @@
     <ClInclude Include="TaskbarColorDlg.h" />
     <ClInclude Include="TaskbarDefaultStyle.h" />
     <ClInclude Include="TaskBarDlg.h" />
+    <ClInclude Include="PinTipWnd.h" />
     <ClInclude Include="TaskBarDlgDrawCommon.h" />
     <ClInclude Include="TaskbarHelper.h" />
     <ClInclude Include="TaskbarItemOrderHelper.h" />
@@ -963,6 +964,7 @@
     <ClCompile Include="TaskbarColorDlg.cpp" />
     <ClCompile Include="TaskbarDefaultStyle.cpp" />
     <ClCompile Include="TaskBarDlg.cpp" />
+    <ClCompile Include="PinTipWnd.cpp" />
     <ClCompile Include="TaskBarDlgDrawCommon.cpp" />
     <ClCompile Include="TaskbarHelper.cpp" />
     <ClCompile Include="TaskbarItemOrderHelper.cpp" />

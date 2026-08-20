@@ -1,4 +1,4 @@
-﻿
+
 // TrafficMonitorDlg.h : 头文件
 //
 
@@ -25,6 +25,7 @@
 #include "PdhHardwareQuery/GpuUsage.h"
 #include "PdhHardwareQuery/DiskUsage.h"
 #include "HistoryTrafficFile.h"
+#include "PinTipWnd.h"
 
 // CTrafficMonitorDlg 对话框
 class CTrafficMonitorDlg : public CDialog
@@ -120,6 +121,8 @@ protected:
     CHistoryTrafficFile m_history_traffic{ theApp.m_history_traffic_path }; //储存历史流量
 
     CToolTipCtrl m_tool_tips;
+    CPinTipWnd m_pin_tip_wnd;       //固定（钉住）的鼠标提示窗口，独立于m_tool_tips，不影响原有的鼠标悬停提示
+    afx_msg void OnPinTooltip();    //右键菜单“固定提示信息”命令处理函数
 
     bool m_connection_change_flag{ false };     //如果执行过IniConnection()函数，该flag会置为true
     bool m_is_foreground_fullscreen{ false };   //指示前台窗口是否正在全局显示

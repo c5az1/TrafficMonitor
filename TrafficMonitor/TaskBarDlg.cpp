@@ -1,4 +1,4 @@
-﻿// TaskBarDlg.cpp : 实现文件
+// TaskBarDlg.cpp : 实现文件
 //
 
 #include "stdafx.h"
@@ -42,6 +42,7 @@ void CTaskBarDlg::DoDataExchange(CDataExchange* pDX)
 }
 
 BEGIN_MESSAGE_MAP(CTaskBarDlg, CDialogEx)
+    ON_COMMAND(ID_PIN_TOOLTIP, &CTaskBarDlg::OnPinTooltip)
     ON_WM_RBUTTONUP()
     ON_WM_INITMENU()
     ON_WM_MOUSEMOVE()
@@ -966,6 +967,35 @@ void CTaskBarDlg::UpdateToolTips()
         tip_info = GetMouseTipsInfo();
         m_tool_tips.UpdateTipText(tip_info, this);
     }
+    //更新固定提示窗口（如果当前处于显示状态）中的信息，保持实时刷新
+    if (m_pin_tip_wnd.IsPinVisible())
+    {
+        m_pin_tip_wnd.SetTipText(GetMouseTipsInfo());
+    }
+}
+
+//“固定提示信息”菜单命令处理函数（任务栏窗口模式）
+//与主窗口的实现逻辑相同：复用GetMouseTipsInfo()获取的信息，显示到独立的、不会自动消失的小窗口中，
+//不会修改原有的鼠标悬停提示m_tool_tips的任何行为。
+void CTaskBarDlg::OnPinTooltip()
+{
+    if (m_pin_tip_wnd.IsPinVisible())
+    {
+        m_pin_tip_wnd.HidePin();
+        return;
+    }
+
+    CString tip_info{ GetMouseTipsInfo() };
+
+    if (m_pin_tip_wnd.GetSafeHwnd() == NULL)
+    {
+        CPoint pt;
+        ::GetCursorPos(&pt);
+        m_pin_tip_wnd.Create(this, pt);
+    }
+
+    m_pin_tip_wnd.SetTipText(tip_info);
+    m_pin_tip_wnd.ShowPin();
 }
 
 bool CTaskBarDlg::IsItemShow(DisplayItem item)
@@ -1101,6 +1131,14 @@ void CTaskBarDlg::OnRButtonUp(UINT nFlags, CPoint point)
     CMenu* pMenu = (is_plugin_item_clicked ? theApp.m_taskbar_menu_plugin.GetSubMenu(0) : theApp.m_taskbar_menu.GetSubMenu(0));
     if (pMenu != nullptr)
     {
+        //根据固定提示窗口当前是否可见，动态修改菜单项文本（“固定提示信息” / “取消固定提示信息”）
+        {
+            CString pin_menu_text{ m_pin_tip_wnd.IsPinVisible()
+                ? theApp.m_str_table.LoadMenuText(L"TXT_UNPIN_TOOLTIP").c_str()
+                : theApp.m_str_table.LoadMenuText(L"TXT_PIN_TOOLTIP").c_str() };
+            if (!pin_menu_text.IsEmpty())
+                pMenu->ModifyMenu(ID_PIN_TOOLTIP, MF_BYCOMMAND | MF_STRING, ID_PIN_TOOLTIP, pin_menu_text);
+        }
         if (plugin != nullptr)
         {
             //将右键菜单中插件菜单的显示文本改为插件名

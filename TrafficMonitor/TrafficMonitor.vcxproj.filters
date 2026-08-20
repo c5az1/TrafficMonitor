@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="资源文件">
@@ -273,6 +273,9 @@
     </ClInclude>
     <ClInclude Include="TaskBarDlg.h">
       <Filter>源文件和头文件\TaskBarDlg</Filter>
+    </ClInclude>
+    <ClInclude Include="PinTipWnd.h">
+      <Filter>源文件和头文件\TrafficMonitorDlg</Filter>
     </ClInclude>
     <ClInclude Include="TrafficMonitor.h">
       <Filter>源文件和头文件\TrafficMonitor</Filter>
@@ -572,6 +575,9 @@
     </ClCompile>
     <ClCompile Include="TaskBarDlg.cpp">
       <Filter>源文件和头文件\TaskBarDlg</Filter>
+    </ClCompile>
+    <ClCompile Include="PinTipWnd.cpp">
+      <Filter>源文件和头文件\TrafficMonitorDlg</Filter>
     </ClCompile>
     <ClCompile Include="TrafficMonitor.cpp">
       <Filter>源文件和头文件\TrafficMonitor</Filter>

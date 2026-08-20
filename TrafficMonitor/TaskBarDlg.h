@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "Common.h"
 #include "afxwin.h"
 #include "DrawCommon.h"
@@ -8,6 +8,7 @@
 #include "CommonData.h"
 #include "TaskbarItemOrderHelper.h"
 #include "SupportedRenderEnums.h"
+#include "PinTipWnd.h"
 #include <list>
 
 // CTaskBarDlg 对话框
@@ -25,6 +26,8 @@ public:
     virtual ~CTaskBarDlg();
 
     CToolTipCtrl m_tool_tips;
+    CPinTipWnd m_pin_tip_wnd;       //固定（钉住）的鼠标提示窗口，独立于m_tool_tips，不影响原有的鼠标悬停提示
+    afx_msg void OnPinTooltip();    //右键菜单“固定提示信息”命令处理函数
 
     void ShowInfo(CDC* pDC); 	//将信息绘制到控件上
     void TryDrawStatusBar(IDrawCommon& drawer, const CRect& rect_bar, int usage_percent); //绘制CPU/内存状态条
